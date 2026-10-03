@@ -1,69 +1,235 @@
-# ticket-ledger
+# 🎭 사랑방극회 티켓판매 장부 (ticket-ledger)
 
-## 실행 방법
+사랑방극회 정기공연(Season 85)의 **티켓·포토카드 판매와 후원금을 회차별로 실시간 기록·집계**하는 웹 장부입니다.
+여러 명이 각자 노트북에서 접속해도 같은 데이터를 실시간으로 공유합니다.
 
-1. [Node.js](https://nodejs.org/) (LTS 버전)를 설치합니다.
-2. 저장소를 내려받은 폴더에서 아래 명령어를 실행합니다.
+- **배포 주소**: https://sarangbang-ledger.web.app/
+- **기술 스택**: React 19 (Create React App) · Firebase Firestore · Firebase 익명 인증 · Tailwind CSS (CDN) · lucide-react 아이콘
 
-```
+---
+
+## 목차
+
+1. [주요 기능](#주요-기능)
+2. [사용 방법 (장부 작성법)](#사용-방법-장부-작성법)
+3. [입력 규칙 — 꼭 지켜주세요](#입력-규칙--꼭-지켜주세요)
+4. [자동 판정 규칙](#자동-판정-규칙)
+5. [집계 기준](#집계-기준)
+6. [운영 공지사항](#운영-공지사항)
+7. [개발자용: 로컬 실행 · 배포](#개발자용-로컬-실행--배포)
+8. [개발자용: 구조 · 설정 변경](#개발자용-구조--설정-변경)
+9. [알려진 이슈](#알려진-이슈)
+
+---
+
+## 주요 기능
+
+| 기능 | 설명 |
+|---|---|
+| 회차 선택 | 테스트 / 1~6회차 공연 / 전체 누적 통계 중 선택 |
+| 판매 등록 | 결제 수단(현금·계좌), 받은 금액, 티켓 수, 포토카드 수, 특이사항 입력 |
+| 자동 판정 | 입력값을 보고 정상 판매·후원 포함·금액 부족·부원 무료 입장 등을 즉시 표시 |
+| 회차별 요약 | Total Revenue(현금/계좌), 예상 매출액, 순수 후원금, 포토카드 판매 수, 부원 입장 수 |
+| 최근 내역 | 회차별 개별 판매 내역 확인 및 건별 삭제, 회차 전체 초기화 |
+| 누적 통계 | 1~6회차 총 매출액 · 총 관람객 · 현금/계좌 합계 · 회차별 막대 그래프 |
+
+> 기본 가격: **입장료 1,000원 / 포토카드 1,000원**
+
+---
+
+## 사용 방법 (장부 작성법)
+
+### 1. 공연 회차 선택
+
+화면 상단 드롭다운에서 회차를 고릅니다.
+
+- `테스트 (Test)` — **연습용 회차**입니다. 실제 판매 전에 여기서 입력을 연습하세요. (누적 통계에는 포함되지 않습니다)
+- `1회차 공연` ~ `6회차 공연` — 실제 공연 회차
+- `📊 전체 누적 통계 (Total)` — 1~6회차 합계 화면
+
+> 접속 시 기본으로 **1회차 공연**이 선택되어 있으니, 판매 전에 회차를 반드시 확인하세요.
+
+### 2. 티켓/굿즈 판매 등록
+
+1. **결제 수단** — `현금` / `계좌` 선택
+2. **받은 금액** — 실제로 받은 총액 입력
+3. **티켓 수 / 포토카드 수** — 판매 수량 입력
+4. **특이사항(MEMO)** — 부원 여부, 기부자 정보 등 (아래 [입력 규칙](#입력-규칙--꼭-지켜주세요) 참고)
+5. 아래 판정 문구(초록색/빨간색)를 확인한 뒤 **판매 등록하기** 클릭
+
+> 티켓 0장으로 입력하면 자동으로 기부금/포토카드 모드로 동작합니다.
+
+### 3. 판매 내역 확인
+
+- **최근 내역**에서 개별 판매 건을 확인할 수 있습니다.
+  - 🟦 파란색 아이콘 = 계좌 / 🟩 초록색 아이콘 = 현금
+- 가능한 입력 유형 예시
+  1. 특이사항에 `부원` 입력 → 무료 입장 (현금/계좌 선택 무관)
+  2. 티켓 + 포토카드 동시 판매
+  3. 포토카드만 판매
+  4. 티켓 값과 기부금을 따로 받은 경우 → 기부금만 따로 입력 (티켓 0, 포토카드 0, 금액만 입력)
+- 각 내역의 🗑 **쓰레기통 아이콘** → 해당 건만 삭제 (확인 창 표시)
+- ⚠️ **초기화 버튼은 현재 회차의 기록 전체를 삭제합니다.** 잘못 누르지 않도록 주의하세요.
+- 화면 상단 카드에서 해당 회차의 총 판매 금액을 확인할 수 있습니다.
+
+### 4. 전체 누적 통계 확인
+
+회차 선택에서 `📊 전체 누적 통계 (Total)`를 고르면 다음을 볼 수 있습니다.
+
+- 총 누적 매출액 / 총 누적 관람객 / 현금·계좌 누적 금액
+- **회차별 상세 그래프** — 위쪽(보라색) 막대는 매출액, 아래쪽(회색) 막대는 관람객 수
+
+---
+
+## 입력 규칙 — 꼭 지켜주세요
+
+### 부원 무료 입장
+- **동아리 부원은 입장 무료**입니다. 특이사항에 오탈자 없이 **`부원`** 이라고 적으면 무료 입장으로 처리됩니다.
+- 동아리 부원의 **지인은 무료 입장 불가**입니다. **전 부원, 부모님, 교수님 모두 무료 입장이 아닙니다!**
+
+> ⚠️ **주의 (프로그램 동작 관련)**
+> 프로그램은 특이사항에 `부원`이라는 글자가 **포함되어 있기만 하면** 무료 입장으로 판정합니다.
+> 따라서 `전 부원`, `부원 지인`, `OO부원 부모님`처럼 적으면 **유료 관객인데도 무료 입장으로 기록**됩니다.
+> 무료 입장이 아닌 관객의 특이사항에는 **`부원`이라는 단어를 쓰지 마세요.** (예: `졸업생`, `OO 지인`, `OO 부모님`)
+
+### 기부금(후원금)
+- 기부금을 받으면 특이사항에 **기부자 정보**를 적습니다. 예) `김철수 부모님`, `홍길동 선배님`
+- 기부금은 티켓 값을 초과하는 금액이므로, **기부금을 받으면 티켓은 기본적으로 무료로 드립니다.**
+  - 예) 졸업생 2명이 50,000원을 기부 → 2,000원을 따로 받지 않고, **티켓 2 / 받은 금액 50,000** 으로 한 번에 입력
+  - → 판정: `후원/기부 포함 (+₩48,000)`
+
+---
+
+## 자동 판정 규칙
+
+입력 폼 아래와 최근 내역에 표시되는 문구는 아래 규칙으로 정해집니다. (`src/App.jsx`의 `calculateSaleDetails`)
+
+| 조건 (위에서부터 우선 적용) | 표시 문구 | 후원금 집계 |
+|---|---|---|
+| 특이사항에 `부원` 포함 | 부원 무료 입장 (Pass) | 0 |
+| 티켓 0, 포토카드 0, 금액 > 0 | 순수 후원금 (+금액) | 받은 금액 전체 |
+| 티켓 0, 포토카드 > 0, 금액 = 포토카드 값 | 포토카드 판매 | 0 |
+| 티켓 0, 포토카드 > 0, 금액 > 포토카드 값 | 포토카드 판매 (후원 +차액) | 차액 |
+| 티켓 0, 포토카드 > 0, 금액 < 포토카드 값 | 포토카드 판매 (차액 … 무시) | 0 |
+| 티켓 > 0, 금액 = 예상 금액 | 정상 판매 | 0 |
+| 티켓 > 0, 금액 > 예상 금액 | 후원/기부 포함 (+차액) | 차액 |
+| 티켓 > 0, 금액 < 예상 금액 | 🔴 금액 부족 (부족분) | 0 |
+
+- **예상 금액** = 티켓 수 × 1,000 + 포토카드 수 × 1,000
+- 티켓·포토카드·금액이 모두 0이고 특이사항에 `부원`이 없으면, 저장 전에 **"무료 증정인가요?" 확인 창**이 뜹니다.
+
+---
+
+## 집계 기준
+
+### 회차 화면 상단 카드
+
+| 항목 | 계산 방법 |
+|---|---|
+| Total Revenue | 해당 회차에 실제로 받은 금액 합계 (현금 + 계좌, 후원금 포함) |
+| 예상 매출액 | (티켓 수 + 포토카드 수) × 1,000원의 합계 — **부원 무료 입장 건의 티켓도 포함되어 계산됩니다** |
+| 순수 후원금 | 위 판정표의 '후원금 집계' 값 중 양수만 합산 |
+| 포토카드 판매 | 포토카드 수량 합계 |
+| 부원(무료) 입장 | 특이사항에 `부원`이 포함된 건의 티켓 수 합계 |
+
+### 전체 누적 통계
+
+| 항목 | 계산 방법 |
+|---|---|
+| 총 누적 매출액 | 1~6회차의 받은 금액 합계 (현금 + 계좌) |
+| 총 누적 관람객 | 1~6회차의 **티켓 수 합계 (부원 무료 입장 포함)** |
+| 현금 / 계좌 | 결제 수단별 받은 금액 합계 |
+
+- `테스트 (Test)` 회차는 누적 통계에서 **제외**됩니다.
+
+---
+
+## 운영 공지사항
+
+- 장부 작성 담당 인원은 **개인 노트북을 지참**하고, 판매 시작 전 개인 노트북에서 정상 실행되는지 확인합니다.
+- **매 회차가 끝나면** 현금 시재를 확인하여 티켓 판매 인원 전체 단톡방에 전송합니다.
+- **매 회차가 끝나면** 계좌 이체 내역을 총무와 비교합니다.
+- **모든 회차가 끝나면** 임원진(회장 또는 총무)에게 작성된 장부를 전송합니다.
+
+---
+
+## 개발자용: 로컬 실행 · 배포
+
+### 로컬 실행
+
+1. [Node.js](https://nodejs.org/) LTS 버전을 설치합니다. (Node 22에서 설치·빌드 확인)
+2. 저장소 폴더에서 아래 명령어를 실행합니다.
+
+```bash
 npm install
 npm start
 ```
 
-3. 브라우저에서 http://localhost:3000 이 자동으로 열립니다.
+3. 브라우저에서 http://localhost:3000 이 열립니다.
+
+> 로컬에서 실행해도 **실제 운영 중인 Firebase 데이터베이스에 연결**됩니다.
+> 연습할 때는 반드시 `테스트 (Test)` 회차를 사용하세요.
 
 ### 배포 (Firebase Hosting)
 
-```
+[Firebase CLI](https://firebase.google.com/docs/cli)가 설치되어 있고 `sarangbang-ledger` 프로젝트 권한이 있어야 합니다.
+
+```bash
+npm install -g firebase-tools   # 최초 1회
+firebase login                  # 최초 1회
 npm run build
 firebase deploy
 ```
 
+- 배포 대상 프로젝트는 `.firebaserc`의 `sarangbang-ledger`, 배포 폴더는 `firebase.json`의 `build`입니다.
+
 ---
 
-# Getting Started with Create React App
+## 개발자용: 구조 · 설정 변경
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### 폴더 구조
 
-## Available Scripts
+```
+ticket-ledger/
+├── public/
+│   └── index.html          # Tailwind CSS를 CDN으로 불러옴
+├── src/
+│   ├── App.jsx             # 앱 전체 로직·화면 (Firebase 설정, 판정 로직, UI)
+│   ├── index.tsx           # React 진입점
+│   ├── App.test.tsx        # 테스트 (현재 화면과 맞지 않음 — 알려진 이슈 참고)
+│   └── dataconnect/        # Firebase Data Connect 예제 템플릿 (앱에서 사용하지 않음)
+├── firebase.json           # Firebase Hosting 설정
+├── .firebaserc             # Firebase 프로젝트 지정
+└── package.json
+```
 
-In the project directory, you can run:
+### 데이터 저장 구조 (Firestore)
 
-### `npm start`
+```
+artifacts/sarangbang-ledger/public/data/{회차ID}/{문서}
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- 회차 ID: `session_test`, `session_1` ~ `session_6`
+- 문서 필드: `type`(현금/계좌), `amountReceived`, `tickets`, `photocards`, `notes`, `timestamp`, `userId`
+- 접속 시 Firebase **익명 로그인**이 자동으로 이루어집니다.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 자주 바꾸는 설정 (`src/App.jsx`)
 
-### `npm test`
+| 바꿀 내용 | 위치 |
+|---|---|
+| 입장료 / 포토카드 가격 | `TICKET_PRICE`, `PHOTOCARD_PRICE` |
+| 회차 목록 | `sessionOptions` (화면 표시) + `realSessions` (누적 통계 대상) — **둘 다 수정** |
+| 접속 시 기본 회차 | `useState('session_1')` (`currentSession`) |
+| 시즌 표기 | 헤더의 `Season 85` 텍스트 |
+| Firebase 프로젝트 | `firebaseConfig` 객체 + `.firebaserc` |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+> 새 시즌에 이전 데이터를 남기고 싶다면, 회차 ID를 바꾸는 방식(예: `s86_session_1`)을 고려하세요. 같은 ID를 쓰면 이전 시즌 기록이 그대로 합산됩니다.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 알려진 이슈
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **`npm test` 실패**: `src/App.test.tsx`가 예전 화면 문구(`사랑방극회 제 85회 티켓판매 장부`, `판매 정보 저장`)를 찾도록 작성되어 있어, 현재 화면(`사랑방극회 티켓판매 장부`, `판매 등록하기`)과 맞지 않습니다.
+- **`npm ci` 실패**: `package-lock.json`이 `package.json`과 완전히 일치하지 않아 `npm ci`가 실패합니다. `npm install`은 정상 동작합니다.
+- **`부원` 부분 일치 판정**: 위 [입력 규칙](#부원-무료-입장)의 주의사항 참고.
+- **보안 규칙 미포함**: Firestore 보안 규칙(`firestore.rules`)은 이 저장소에 포함되어 있지 않습니다. 현재 Firebase 콘솔에 어떤 규칙이 설정되어 있는지는 이 저장소만으로는 확인할 수 없습니다.
