@@ -16,9 +16,7 @@
 4. [자동 판정 규칙](#자동-판정-규칙)
 5. [집계 기준](#집계-기준)
 6. [운영 공지사항](#운영-공지사항)
-7. [개발자용: 로컬 실행 · 배포](#개발자용-로컬-실행--배포)
-8. [개발자용: 구조 · 설정 변경](#개발자용-구조--설정-변경)
-9. [알려진 이슈](#알려진-이슈)
+7. [개발자용: 구조 · 설정 변경](#개발자용-구조--설정-변경)
 
 ---
 
@@ -153,38 +151,6 @@
 
 ---
 
-## 개발자용: 로컬 실행 · 배포
-
-### 로컬 실행
-
-1. [Node.js](https://nodejs.org/) LTS 버전을 설치합니다. (Node 22에서 설치·빌드 확인)
-2. 저장소 폴더에서 아래 명령어를 실행합니다.
-
-```bash
-npm install
-npm start
-```
-
-3. 브라우저에서 http://localhost:3000 이 열립니다.
-
-> 로컬에서 실행해도 **실제 운영 중인 Firebase 데이터베이스에 연결**됩니다.
-> 연습할 때는 반드시 `테스트 (Test)` 회차를 사용하세요.
-
-### 배포 (Firebase Hosting)
-
-[Firebase CLI](https://firebase.google.com/docs/cli)가 설치되어 있고 `sarangbang-ledger` 프로젝트 권한이 있어야 합니다.
-
-```bash
-npm install -g firebase-tools   # 최초 1회
-firebase login                  # 최초 1회
-npm run build
-firebase deploy
-```
-
-- 배포 대상 프로젝트는 `.firebaserc`의 `sarangbang-ledger`, 배포 폴더는 `firebase.json`의 `build`입니다.
-
----
-
 ## 개발자용: 구조 · 설정 변경
 
 ### 폴더 구조
@@ -196,7 +162,7 @@ ticket-ledger/
 ├── src/
 │   ├── App.jsx             # 앱 전체 로직·화면 (Firebase 설정, 판정 로직, UI)
 │   ├── index.tsx           # React 진입점
-│   ├── App.test.tsx        # 테스트 (현재 화면과 맞지 않음 — 알려진 이슈 참고)
+│   ├── App.test.tsx        # 테스트
 │   └── dataconnect/        # Firebase Data Connect 예제 템플릿 (앱에서 사용하지 않음)
 ├── firebase.json           # Firebase Hosting 설정
 ├── .firebaserc             # Firebase 프로젝트 지정
@@ -224,12 +190,3 @@ artifacts/sarangbang-ledger/public/data/{회차ID}/{문서}
 | Firebase 프로젝트 | `firebaseConfig` 객체 + `.firebaserc` |
 
 > 새 시즌에 이전 데이터를 남기고 싶다면, 회차 ID를 바꾸는 방식(예: `s86_session_1`)을 고려하세요. 같은 ID를 쓰면 이전 시즌 기록이 그대로 합산됩니다.
-
----
-
-## 알려진 이슈
-
-- **`npm test` 실패**: `src/App.test.tsx`가 예전 화면 문구(`사랑방극회 제 85회 티켓판매 장부`, `판매 정보 저장`)를 찾도록 작성되어 있어, 현재 화면(`사랑방극회 티켓판매 장부`, `판매 등록하기`)과 맞지 않습니다.
-- **`npm ci` 실패**: `package-lock.json`이 `package.json`과 완전히 일치하지 않아 `npm ci`가 실패합니다. `npm install`은 정상 동작합니다.
-- **`부원` 부분 일치 판정**: 위 [입력 규칙](#부원-무료-입장)의 주의사항 참고.
-- **보안 규칙 미포함**: Firestore 보안 규칙(`firestore.rules`)은 이 저장소에 포함되어 있지 않습니다. 현재 Firebase 콘솔에 어떤 규칙이 설정되어 있는지는 이 저장소만으로는 확인할 수 없습니다.
