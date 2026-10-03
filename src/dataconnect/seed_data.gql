@@ -1,0 +1,74 @@
+mutation CreateDemoData @transaction @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  user_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      createdAt: "2024-04-02T12:34:56.789Z",
+      displayName: "demouser1",
+      email: "demouser1@example.com"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      createdAt: "2024-04-02T12:34:56.789Z",
+      displayName: "demouser2",
+      email: "demouser2@example.com"
+    }
+  ])
+  category_insertMany(data: [
+    {
+      id: "660e8400-e29b-41d4-a716-446655440000",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      createdAt: "2024-04-02T12:34:56.789Z",
+      name: "Food",
+      type: "Expense"
+    },
+    {
+      id: "660e8400-e29b-41d4-a716-446655440001",
+      userId: "550e8400-e29b-41d4-a716-446655440001",
+      createdAt: "2024-04-02T12:34:56.789Z",
+      name: "Salary",
+      type: "Income"
+    }
+  ])
+  account_insertMany(data: [
+    {
+      id: "770e8400-e29b-41d4-a716-446655440000",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      balance: 100.00,
+      createdAt: "2024-04-02T12:34:56.789Z",
+      name: "Checking Account",
+      type: "Asset"
+    },
+    {
+      id: "770e8400-e29b-41d4-a716-446655440001",
+      userId: "550e8400-e29b-41d4-a716-446655440001",
+      balance: 200.00,
+      createdAt: "2024-04-02T12:34:56.789Z",
+      name: "Savings Account",
+      type: "Asset"
+    }
+  ])
+  transaction_insertMany(data: [
+    {
+      id: "880e8400-e29b-41d4-a716-446655440000",
+      accountId: "770e8400-e29b-41d4-a716-446655440000",
+      categoryId: "660e8400-e29b-41d4-a716-446655440000",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      amount: 50.00,
+      createdAt: "2024-04-02T12:34:56.789Z",
+      date: "2024-04-02",
+      isRecurring: false,
+      type: "Expense"
+    },
+    {
+      id: "880e8400-e29b-41d4-a716-446655440001",
+      accountId: "770e8400-e29b-41d4-a716-446655440001",
+      categoryId: "660e8400-e29b-41d4-a716-446655440001",
+      userId: "550e8400-e29b-41d4-a716-446655440001",
+      amount: 1000.00,
+      createdAt: "2024-04-02T12:34:56.789Z",
+      date: "2024-04-01",
+      isRecurring: true,
+      type: "Income"
+    }
+  ])
+}

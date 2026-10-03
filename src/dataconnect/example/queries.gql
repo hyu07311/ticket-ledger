@@ -1,0 +1,37 @@
+mutation CreateAccount($userId: UUID!, $balance: Float!, $name: String!, $type: String!) @auth(level: USER) {
+  account_insert(data: {userId: $userId, balance: $balance, name: $name, type: $type, createdAt_expr: "request.time"})
+}
+
+query GetTransactionsForUser($userId: UUID!) @auth(level: USER) {
+  transactions(where: {userId: {eq: $userId}}) {
+    id
+    amount
+    date
+    description
+    type
+    category {
+      name
+    }
+    account {
+      name
+    }
+  }
+}
+
+mutation CreateCategory($userId: UUID!, $name: String!, $type: String!, $description: String) @auth(level: USER) {
+  category_insert(data: {userId: $userId, name: $name, type: $type, description: $description, createdAt_expr: "request.time"})
+}
+
+query GetBudgetByCategory($userId: UUID!, $categoryId: UUID!) @auth(level: USER) {
+  budgets(where: {userId: {eq: $userId}, categoryId: {eq: $categoryId}}) {
+    id
+    amount
+    startDate
+    endDate
+    period
+    description
+    category {
+      name
+    }
+  }
+}
